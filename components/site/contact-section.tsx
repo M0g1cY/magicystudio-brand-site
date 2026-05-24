@@ -43,7 +43,7 @@ export function ContactSection() {
           transition={{ duration: 0.5 }}
           className="space-y-6 max-w-3xl"
         >
-          <SectionMarker n={5} total={6} label="Contact" />
+          <SectionMarker n={5} total={5} label="Contact" />
           <h2 className="font-display tracking-[-0.02em] text-foreground text-5xl sm:text-6xl lg:text-[5.5rem] leading-[0.95]">
             Let&apos;s build <span className="italic font-[200]">something.</span>
           </h2>

@@ -275,3 +275,9 @@ Implemented the real hero token assembly in [components/site/token-assembler.tsx
 ## v3 M3 - Project Card Workflow Hover (Codex)
 
 Expanded [components/site/project-card.tsx](components/site/project-card.tsx) so featured cards expose the v3 workflow evidence on hover/focus: the outer card now carries `data-cursor="view"`, keeps the orange inversion, and renders staggered mono workflow rows plus the project metric as an editorial bottom-right label. Grid cards without `workflow` / `metric` keep the v2 behavior. Keyboard parity is provided through focus-visible card states and Framer focus variants. Validation passed: `npm run lint` and `npm run build`.
+
+---
+
+## v3 M4 - Sticky ProcessStory (Codex)
+
+Implemented [components/site/process-story.tsx](components/site/process-story.tsx) as the v3 5-beat process section: desktop uses a 500vh scroll container with sticky full-screen beats driven by `useScroll` / `useTransform`, a live beat indicator, and a bottom progress bar; mobile and reduced-motion users get stacked cards. The SHIPPED beat reads the three featured projects and links thumbnails with `data-cursor="view"`. [app/page.tsx](app/page.tsx) now inserts Process between Work and About, and section markers were normalized to `total={5}` across Work, Process, About, Services, and Contact. Validation passed: `npm run lint` and `npm run build`.

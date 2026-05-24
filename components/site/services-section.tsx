@@ -48,7 +48,7 @@ export function ServicesSection() {
           transition={{ duration: 0.5 }}
           className="space-y-6 max-w-3xl"
         >
-          <SectionMarker n={4} total={6} label="Services" />
+          <SectionMarker n={4} total={5} label="Services" />
           <h2 className="font-display tracking-[-0.02em] text-foreground text-5xl sm:text-6xl lg:text-[5.5rem] leading-[0.95]">
             What I&apos;m taking <span className="italic font-[200]">on.</span>
           </h2>

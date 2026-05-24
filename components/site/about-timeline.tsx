@@ -128,7 +128,7 @@ export function AboutTimeline() {
       <div className="mx-auto grid max-w-[1280px] gap-12 lg:grid-cols-12 lg:gap-10">
         <div className="lg:sticky lg:top-24 lg:col-span-5 lg:self-start">
           <div className="space-y-8">
-            <SectionMarker n={3} total={6} label="About" />
+            <SectionMarker n={3} total={5} label="About" />
             <div className="space-y-5">
               <p className="font-mono text-[0.72rem] uppercase tracking-[0.18em] text-primary">
                 personal operating log

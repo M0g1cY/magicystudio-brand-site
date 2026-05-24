@@ -23,7 +23,7 @@ export function FeaturedProjects() {
           className="flex items-end justify-between gap-6"
         >
           <div className="space-y-6">
-            <SectionMarker n={1} total={6} label="Work" />
+            <SectionMarker n={1} total={5} label="Work" />
             <h2 className="font-display tracking-[-0.02em] text-foreground text-5xl sm:text-6xl lg:text-[5.5rem] leading-[0.95]">
               Selected <span className="italic font-[200]">works.</span>
             </h2>
