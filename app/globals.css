@@ -118,9 +118,101 @@
   }
 }
 
+@keyframes operator-scan {
+  0% {
+    transform: translateY(-120%);
+    opacity: 0;
+  }
+
+  35% {
+    opacity: 0.7;
+  }
+
+  100% {
+    transform: translateY(120%);
+    opacity: 0;
+  }
+}
+
+@keyframes operator-row-active {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+
+  14%,
+  30% {
+    transform: translateX(2px);
+  }
+}
+
+@keyframes operator-token-pulse {
+  0%,
+  100% {
+    color: rgb(from var(--foreground) r g b / 0.8);
+  }
+
+  20%,
+  42% {
+    color: var(--foreground);
+  }
+}
+
 @layer components {
   .group:hover .card-text-bg,
   .group:focus-visible .card-text-bg {
     animation: card-text-current 4.6s linear infinite;
+  }
+
+  .operator-scan {
+    background: linear-gradient(
+      180deg,
+      transparent,
+      rgb(from var(--foreground) r g b / 0.32),
+      transparent
+    );
+    transform: translateY(-120%);
+  }
+
+  .operator-card:hover .operator-scan,
+  .operator-card:focus-within .operator-scan {
+    animation: operator-scan 2.2s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+  }
+
+  .operator-card:hover .operator-row,
+  .operator-card:focus-within .operator-row {
+    animation: operator-row-active 5.4s ease-in-out infinite;
+  }
+
+  .operator-card:hover .operator-row dt,
+  .operator-card:focus-within .operator-row dt {
+    color: var(--primary);
+  }
+
+  .operator-card:hover .operator-row-dot,
+  .operator-card:focus-within .operator-row-dot {
+    opacity: 1;
+  }
+
+  .operator-card:hover .operator-stack-token,
+  .operator-card:focus-within .operator-stack-token {
+    animation: operator-token-pulse 1.6s ease-in-out infinite;
+  }
+
+  .operator-icon-button::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 1px;
+    background: var(--primary);
+    transform: translateX(-100%);
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .operator-icon-button:hover::after,
+  .operator-icon-button:focus-visible::after {
+    transform: translateX(0);
   }
 }
