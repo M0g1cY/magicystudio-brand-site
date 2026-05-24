@@ -1,32 +1,7 @@
 "use client";
 
-/**
- * Hero token-assembler animation. v3/M2 — see docs/SPEC-v3.md §1.1.
- *
- * STATUS: stub. Codex implements the body.
- *
- * Behavior contract (codex must satisfy):
- *  1. SSR / first paint: render `phrases[0]` as plain text. No layout shift.
- *  2. After mount + `initialDelayMs` (default 500): split phrase by whitespace
- *     into tokens; each token enters from random ±8px jitter + opacity 0,
- *     stagger `staggerMs` (default 30) per token, total < 250ms.
- *     During entry, each token wears a 1px `--electric` border that fades out.
- *  3. After 1500ms idle, advance to `phrases[(i+1) % len]`:
- *     reverse-disassemble the current phrase (tokens fly out + fade), then
- *     assemble the next. Cycle every `cycleMs` (default 4000).
- *  4. Whitespace must round-trip — preserve a non-breaking space slot per gap.
- *  5. `prefers-reduced-motion: reduce` → fall back to v2-style fade swap.
- *  6. `aria-live="polite"` on the live region. Tokens are aria-hidden.
- *
- * Implementation notes:
- *  - Use framer-motion `AnimatePresence` + `motion.span`.
- *  - Do NOT introduce GSAP or new deps.
- *  - Component must be self-contained; no layout-affecting props.
- *  - Wrap in a fixed min-height container to avoid CLS during disassembly.
- */
-
-import { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useEffect, useMemo, useState } from "react";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 
 interface TokenAssemblerProps {
   phrases: readonly string[];
@@ -36,38 +11,136 @@ interface TokenAssemblerProps {
   className?: string;
 }
 
+type PhrasePart =
+  | { kind: "space"; value: string }
+  | { kind: "token"; value: string; tokenIndex: number };
+
 export function TokenAssembler({
   phrases,
+  initialDelayMs = 500,
   cycleMs = 4000,
+  staggerMs = 30,
   className = "",
 }: TokenAssemblerProps) {
-  // TODO(codex): full token split + jitter + electric flash per §1.1.
-  // Below is a placeholder fade swap so v2 visuals don't regress while
-  // the real implementation lands. Delete this block on M2.
   const [i, setI] = useState(0);
+  const [ready, setReady] = useState(false);
+  const reduceMotion = useReducedMotion();
+  const phrase = phrases[i] ?? "";
+  const parts = useMemo(() => splitPhrase(phrase), [phrase]);
+
   useEffect(() => {
-    if (phrases.length <= 1) return;
-    const id = setInterval(() => setI((n) => (n + 1) % phrases.length), cycleMs);
-    return () => clearInterval(id);
-  }, [phrases.length, cycleMs]);
+    const id = window.setTimeout(() => setReady(true), initialDelayMs);
+    return () => window.clearTimeout(id);
+  }, [initialDelayMs]);
+
+  useEffect(() => {
+    if (!ready || phrases.length <= 1) return;
+    const id = window.setInterval(
+      () => setI((n) => (n + 1) % phrases.length),
+      cycleMs,
+    );
+    return () => window.clearInterval(id);
+  }, [ready, phrases.length, cycleMs]);
+
+  if (!ready) {
+    return (
+      <span
+        aria-live="polite"
+        className={`relative block min-h-[1.1em] overflow-hidden italic text-foreground ${className}`}
+      >
+        {phrases[0] ?? ""}
+      </span>
+    );
+  }
+
+  if (reduceMotion) {
+    return (
+      <span
+        aria-live="polite"
+        className={`relative block min-h-[1.1em] overflow-hidden ${className}`}
+      >
+        <AnimatePresence mode="wait" initial={false}>
+          <motion.span
+            key={i}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.35, ease: "easeOut" }}
+            className="block italic text-foreground"
+          >
+            {phrase}
+          </motion.span>
+        </AnimatePresence>
+      </span>
+    );
+  }
 
   return (
     <span
       aria-live="polite"
       className={`relative block min-h-[1.1em] overflow-hidden ${className}`}
     >
+      <span className="sr-only">{phrase}</span>
       <AnimatePresence mode="wait" initial={false}>
-        <motion.span
-          key={i}
-          initial={{ y: "55%", opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          exit={{ y: "-45%", opacity: 0 }}
-          transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-          className="block italic text-foreground"
-        >
-          {phrases[i]}
+        <motion.span key={i} aria-hidden="true" className="block italic">
+          {parts.map((part, partIndex) =>
+            part.kind === "space" ? (
+              <span key={`${i}-space-${partIndex}`}>&nbsp;</span>
+            ) : (
+              <motion.span
+                key={`${i}-${part.value}-${partIndex}`}
+                initial={{
+                  x: jitter(i, partIndex, "x"),
+                  y: jitter(i, partIndex, "y"),
+                  opacity: 0,
+                  borderColor: "var(--electric)",
+                }}
+                animate={{
+                  x: 0,
+                  y: 0,
+                  opacity: 1,
+                  borderColor: "transparent",
+                }}
+                exit={{
+                  x: jitter(i + 11, partIndex, "x"),
+                  y: jitter(i + 11, partIndex, "y") - 10,
+                  opacity: 0,
+                  borderColor: "var(--electric)",
+                }}
+                transition={{
+                  duration: 0.22,
+                  delay: part.tokenIndex * (staggerMs / 1000),
+                  ease: [0.22, 1, 0.36, 1],
+                  borderColor: { duration: 0.46, delay: 0.12 },
+                }}
+                className="-mx-0.5 inline-block border border-transparent px-0.5 text-foreground will-change-transform"
+              >
+                {part.value}
+              </motion.span>
+            ),
+          )}
         </motion.span>
       </AnimatePresence>
     </span>
   );
+}
+
+function splitPhrase(phrase: string): PhrasePart[] {
+  let tokenIndex = 0;
+  const parts: PhrasePart[] = [];
+  for (const part of phrase.split(/(\s+)/)) {
+    if (!part) continue;
+    if (/^\s+$/.test(part)) {
+      parts.push({ kind: "space", value: part });
+    } else {
+      parts.push({ kind: "token", value: part, tokenIndex: tokenIndex++ });
+    }
+  }
+  return parts;
+}
+
+function jitter(phraseIndex: number, tokenIndex: number, axis: "x" | "y") {
+  const seed = phraseIndex * 37 + tokenIndex * 17 + (axis === "x" ? 3 : 11);
+  const normalized = ((seed * 9301 + 49297) % 233280) / 233280;
+  return normalized > 0.5 ? 8 : -8;
 }

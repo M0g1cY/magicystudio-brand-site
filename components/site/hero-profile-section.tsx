@@ -1,44 +1,7 @@
-"use client";
-
-import { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import { FiGithub, FiMail, FiArrowUpRight } from "react-icons/fi";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { siteConfig } from "@/lib/site-data";
-
-const ROTATE_MS = 4000;
-
-function RotatingHeadline({ items }: { items: readonly string[] }) {
-  const [i, setI] = useState(0);
-  useEffect(() => {
-    if (items.length <= 1) return;
-    const id = setInterval(
-      () => setI((n) => (n + 1) % items.length),
-      ROTATE_MS,
-    );
-    return () => clearInterval(id);
-  }, [items.length]);
-
-  return (
-    <span
-      aria-live="polite"
-      className="relative block min-h-[1.1em] overflow-hidden"
-    >
-      <AnimatePresence mode="wait" initial={false}>
-        <motion.span
-          key={i}
-          initial={{ y: "55%", opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          exit={{ y: "-45%", opacity: 0 }}
-          transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-          className="block italic text-foreground"
-        >
-          {items[i]}
-        </motion.span>
-      </AnimatePresence>
-    </span>
-  );
-}
+import { TokenAssembler } from "@/components/site/token-assembler";
 
 export function HeroProfileSection() {
   const { fixed, rotating } = siteConfig.headline;
@@ -72,7 +35,7 @@ export function HeroProfileSection() {
           </div>
 
           <h1 className="font-display font-[200] tracking-[-0.025em] leading-[0.94] text-[clamp(3.25rem,11vw,9.5rem)]">
-            <RotatingHeadline items={rotating} />
+            <TokenAssembler phrases={rotating} />
           </h1>
 
           <p className="max-w-[640px] text-lg leading-[1.7] text-foreground/85">
@@ -132,6 +95,7 @@ export function HeroProfileSection() {
               </a>
               <a
                 href="#contact"
+                data-cursor="build"
                 className="ml-auto inline-flex items-center gap-1.5 h-9 px-3 font-mono text-[0.68rem] uppercase tracking-[0.18em] border border-border text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors"
               >
                 contact <FiArrowUpRight size={12} />

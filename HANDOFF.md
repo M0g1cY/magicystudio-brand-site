@@ -263,3 +263,9 @@ master  →  v2-rebrand (M1-M5 v2 改造)
               ↓
             合并回 master + 部署 Vercel
 ```
+
+---
+
+## v3 M2 - Hero TokenAssembler (Codex)
+
+Implemented the real hero token assembly in [components/site/token-assembler.tsx](components/site/token-assembler.tsx): first paint stays as the plain first phrase, then tokens assemble with deterministic jitter, staggered entry, and a temporary electric border flash. Reduced-motion users get the quieter fade swap. [components/site/hero-profile-section.tsx](components/site/hero-profile-section.tsx) now consumes `<TokenAssembler phrases={rotating} />`, removes the inline rotating headline, and marks the hero contact CTA with `data-cursor="build"`. Validation passed: `npm run lint` and `npm run build`.
