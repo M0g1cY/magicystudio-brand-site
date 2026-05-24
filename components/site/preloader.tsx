@@ -12,7 +12,7 @@ export function Preloader() {
   const [intro, setIntro] = useState(true);
   const [compact, setCompact] = useState(false);
   const [expanded, setExpanded] = useState(false);
-  const closeTimer = useRef<number | null>(null);
+  const expandedRef = useRef(false);
 
   useEffect(() => {
     if (reduceMotion) return;
@@ -45,14 +45,38 @@ export function Preloader() {
       setCompact(progress > 0.18);
     };
 
+    const onPointerMove = (event: PointerEvent) => {
+      const isExpanded = expandedRef.current;
+      const width = isExpanded ? 380 : 96;
+      const height = isExpanded ? 132 : 96;
+      const centerX = window.innerWidth / 2;
+      const centerY = isExpanded ? 71 : 50;
+      const inside =
+        event.clientX >= centerX - width / 2 &&
+        event.clientX <= centerX + width / 2 &&
+        event.clientY >= centerY - height / 2 &&
+        event.clientY <= centerY + height / 2;
+
+      if (inside && !expandedRef.current) {
+        expandedRef.current = true;
+        setExpanded(true);
+      }
+
+      if (!inside && expandedRef.current) {
+        expandedRef.current = false;
+        setExpanded(false);
+      }
+    };
+
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("pointermove", onPointerMove, { passive: true });
 
     return () => {
       window.cancelAnimationFrame(frame);
       window.clearTimeout(introTimer);
       window.removeEventListener("scroll", onScroll);
-      if (closeTimer.current !== null) window.clearTimeout(closeTimer.current);
+      window.removeEventListener("pointermove", onPointerMove);
     };
   }, [reduceMotion]);
 
@@ -62,25 +86,9 @@ export function Preloader() {
   const showFull = !isCompact;
   const clipPath = intro
     ? "inset(0 0 0 0 round 0px)"
-    : isCompact
+      : isCompact
       ? "inset(16px calc(50vw - 34px) calc(100vh - 84px) calc(50vw - 34px) round 0 0 10px 10px)"
       : "inset(16px calc(50vw - 170px) calc(100vh - 126px) calc(50vw - 170px) round 0 0 12px 12px)";
-
-  const keepExpanded = () => {
-    if (closeTimer.current !== null) {
-      window.clearTimeout(closeTimer.current);
-      closeTimer.current = null;
-    }
-    setExpanded(true);
-  };
-
-  const releaseExpanded = () => {
-    if (closeTimer.current !== null) window.clearTimeout(closeTimer.current);
-    closeTimer.current = window.setTimeout(() => {
-      setExpanded(false);
-      closeTimer.current = null;
-    }, 260);
-  };
 
   return (
     <motion.div
@@ -98,16 +106,6 @@ export function Preloader() {
         contain: "paint",
       }}
     >
-      {!intro && (
-        <div
-          aria-hidden="true"
-          onPointerEnter={keepExpanded}
-          onPointerMove={keepExpanded}
-          onPointerLeave={releaseExpanded}
-          className="fixed left-1/2 top-3 z-[1] h-32 w-[380px] -translate-x-1/2"
-          style={{ pointerEvents: "auto" }}
-        />
-      )}
       <motion.button
         type="button"
         aria-label="MagicYStudio"
