@@ -20,7 +20,16 @@ export function Preloader() {
   useEffect(() => {
     if (reduceMotion) return;
     const forceReplay = window.location.search.includes("preloader=1");
-    if (!isDev && !forceReplay && window.sessionStorage.getItem(SEEN_KEY)) {
+    const isLocalPreview =
+      window.location.hostname === "localhost" ||
+      window.location.hostname === "127.0.0.1";
+
+    if (
+      !isDev &&
+      !isLocalPreview &&
+      !forceReplay &&
+      window.sessionStorage.getItem(SEEN_KEY)
+    ) {
       return;
     }
     if (forceReplay) window.sessionStorage.removeItem(SEEN_KEY);
@@ -36,6 +45,7 @@ export function Preloader() {
 
     anchor.style.opacity = "0";
     const frame = window.requestAnimationFrame(() => {
+      setSettled(false);
       setTarget({
         x: anchorCenterX - viewportCenterX,
         y: anchorCenterY - viewportCenterY,
@@ -73,16 +83,16 @@ export function Preloader() {
       }}
     >
       <motion.div
-        className="font-mono text-[2rem] uppercase tracking-[0.18em] text-muted-foreground"
-        initial={{ x: 0, y: 0, fontSize: "2rem" }}
+        className="font-mono uppercase tracking-[0.18em] text-muted-foreground"
+        initial={{ x: 0, y: 0, fontSize: "clamp(2.75rem, 8vw, 7rem)" }}
         animate={{
           x: target.x,
           y: target.y,
           fontSize: "0.72rem",
         }}
         transition={{
-          delay: 0.3,
-          duration: 0.5,
+          delay: 0.6,
+          duration: 0.75,
           ease: [0.22, 1, 0.36, 1],
         }}
         onAnimationComplete={() => setSettled(true)}
