@@ -48,3 +48,6 @@ next-env.d.ts
 /PPEditorialNew-Free_for_personal_use.zip
 /public/fonts/PPEditorialNew-Free for personal use/
 /public/fonts/__MACOSX/
+
+# local QA artifacts
+/.playwright-shots/
