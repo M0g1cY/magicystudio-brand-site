@@ -6,99 +6,134 @@ import { motion, useReducedMotion } from "framer-motion";
 const SEEN_KEY = "preloader-seen";
 const isDev = process.env.NODE_ENV === "development";
 
-type Target = {
-  x: number;
-  y: number;
-};
-
 export function Preloader() {
   const reduceMotion = useReducedMotion();
-  const [visible, setVisible] = useState(false);
-  const [target, setTarget] = useState<Target>({ x: 0, y: 0 });
-  const [settled, setSettled] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  const [intro, setIntro] = useState(true);
+  const [compact, setCompact] = useState(false);
+  const [expanded, setExpanded] = useState(false);
 
   useEffect(() => {
     if (reduceMotion) return;
-    const forceReplay = window.location.search.includes("preloader=1");
+
     const isLocalPreview =
       window.location.hostname === "localhost" ||
       window.location.hostname === "127.0.0.1";
+    const forceReplay = window.location.search.includes("preloader=1");
+    const seen = window.sessionStorage.getItem(SEEN_KEY);
+    const shouldReplay = isDev || isLocalPreview || forceReplay || !seen;
 
-    if (
-      !isDev &&
-      !isLocalPreview &&
-      !forceReplay &&
-      window.sessionStorage.getItem(SEEN_KEY)
-    ) {
-      return;
-    }
-    if (forceReplay) window.sessionStorage.removeItem(SEEN_KEY);
-
-    const anchor = document.getElementById("wordmark-anchor");
-    if (!anchor) return;
-
-    const rect = anchor.getBoundingClientRect();
-    const anchorCenterX = rect.left + rect.width / 2;
-    const anchorCenterY = rect.top + rect.height / 2;
-    const viewportCenterX = window.innerWidth / 2;
-    const viewportCenterY = window.innerHeight / 2;
-
-    anchor.style.opacity = "0";
     const frame = window.requestAnimationFrame(() => {
-      setSettled(false);
-      setTarget({
-        x: anchorCenterX - viewportCenterX,
-        y: anchorCenterY - viewportCenterY,
-      });
-      setVisible(true);
+      setMounted(true);
+      setIntro(shouldReplay);
     });
 
-    const safety = window.setTimeout(() => {
-      anchor.style.opacity = "";
-      window.sessionStorage.setItem(SEEN_KEY, "true");
-      setVisible(false);
-    }, 2000);
+    const introTimer = window.setTimeout(
+      () => {
+        setIntro(false);
+        window.sessionStorage.setItem(SEEN_KEY, "true");
+      },
+      shouldReplay ? 1550 : 0,
+    );
+
+    const onScroll = () => {
+      const hero = document.getElementById("hero");
+      if (!hero) return;
+      const rect = hero.getBoundingClientRect();
+      const progress = Math.min(Math.max(-rect.top / rect.height, 0), 1);
+      setCompact(progress > 0.18);
+    };
+
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
 
     return () => {
       window.cancelAnimationFrame(frame);
-      window.clearTimeout(safety);
-      anchor.style.opacity = "";
+      window.clearTimeout(introTimer);
+      window.removeEventListener("scroll", onScroll);
     };
   }, [reduceMotion]);
 
-  if (!visible || reduceMotion) return null;
+  if (!mounted || reduceMotion) return null;
+
+  const isCompact = compact && !expanded && !intro;
+  const clipPath = intro
+    ? "inset(0 0 0 0 round 0px)"
+    : isCompact
+      ? "inset(16px calc(50vw - 34px) calc(100vh - 84px) calc(50vw - 34px) round 0 0 10px 10px)"
+      : "inset(16px calc(50vw - 140px) calc(100vh - 116px) calc(50vw - 140px) round 0 0 12px 12px)";
 
   return (
     <motion.div
-      className="fixed inset-0 z-[10000] flex items-center justify-center bg-background"
-      initial={{ opacity: 1 }}
-      animate={{ opacity: settled ? 0 : 1 }}
-      transition={{ duration: 0.2, ease: "easeOut" }}
-      onAnimationComplete={() => {
-        if (!settled) return;
-        const anchor = document.getElementById("wordmark-anchor");
-        if (anchor) anchor.style.opacity = "";
-        window.sessionStorage.setItem(SEEN_KEY, "true");
-        setVisible(false);
+      aria-label="MagicYStudio logo dock"
+      className="fixed inset-0 z-[10000] bg-background text-foreground"
+      initial={false}
+      animate={{ clipPath }}
+      transition={{
+        duration: intro ? 0 : 1.1,
+        delay: intro ? 0 : 0,
+        ease: [0.76, 0, 0.24, 1],
+      }}
+      style={{
+        pointerEvents: intro ? "none" : "auto",
+        contain: "paint",
       }}
     >
-      <motion.div
-        className="font-mono uppercase tracking-[0.18em] text-muted-foreground"
-        initial={{ x: 0, y: 0, fontSize: "clamp(2.75rem, 8vw, 7rem)" }}
+      <motion.button
+        type="button"
+        aria-label="MagicYStudio"
+        onPointerEnter={() => setExpanded(true)}
+        onPointerLeave={() => setExpanded(false)}
+        className="fixed left-1/2 top-1/2 grid -translate-x-1/2 -translate-y-1/2 place-items-center bg-transparent font-mono uppercase tracking-[0.18em] outline-none"
+        initial={{
+          opacity: 0,
+          scale: 0.84,
+          width: 360,
+          height: 120,
+          top: "50%",
+        }}
         animate={{
-          x: target.x,
-          y: target.y,
-          fontSize: "0.72rem",
+          opacity: 1,
+          scale: 1,
+          width: isCompact ? 68 : 280,
+          height: isCompact ? 68 : 100,
+          top: intro ? "50%" : isCompact ? 50 : 66,
         }}
         transition={{
-          delay: 0.6,
-          duration: 0.75,
-          ease: [0.22, 1, 0.36, 1],
+          opacity: { duration: 0.65, delay: intro ? 0.12 : 0 },
+          scale: { duration: 0.75, delay: intro ? 0.12 : 0 },
+          width: { duration: 0.82, ease: [0.16, 1, 0.3, 1] },
+          height: { duration: 0.82, ease: [0.16, 1, 0.3, 1] },
+          top: {
+            duration: intro ? 1.15 : 0.82,
+            delay: intro ? 0.55 : 0,
+            ease: [0.76, 0, 0.24, 1],
+          },
         }}
-        onAnimationComplete={() => setSettled(true)}
+        style={{ pointerEvents: intro ? "none" : "auto" }}
       >
-        <span className="text-foreground">MagicY</span>studio
-      </motion.div>
+        <motion.span
+          className="grid place-items-center text-center text-[1.15rem] leading-none"
+          animate={{
+            opacity: isCompact ? 0 : 1,
+            scale: isCompact ? 0.72 : 1,
+          }}
+          transition={{ duration: 0.52, ease: "easeOut" }}
+        >
+          <span className="text-foreground">MagicY</span>
+          <span className="text-muted-foreground">studio</span>
+        </motion.span>
+        <motion.span
+          className="absolute grid place-items-center text-[1.55rem] leading-none text-foreground"
+          animate={{
+            opacity: isCompact ? 1 : 0,
+            scale: isCompact ? 1 : 0.76,
+          }}
+          transition={{ duration: 0.52, ease: "easeOut" }}
+        >
+          MY
+        </motion.span>
+      </motion.button>
     </motion.div>
   );
 }
