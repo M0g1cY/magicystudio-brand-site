@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 
 const SEEN_KEY = "preloader-seen";
@@ -12,6 +12,7 @@ export function Preloader() {
   const [intro, setIntro] = useState(true);
   const [compact, setCompact] = useState(false);
   const [expanded, setExpanded] = useState(false);
+  const closeTimer = useRef<number | null>(null);
 
   useEffect(() => {
     if (reduceMotion) return;
@@ -51,6 +52,7 @@ export function Preloader() {
       window.cancelAnimationFrame(frame);
       window.clearTimeout(introTimer);
       window.removeEventListener("scroll", onScroll);
+      if (closeTimer.current !== null) window.clearTimeout(closeTimer.current);
     };
   }, [reduceMotion]);
 
@@ -63,6 +65,22 @@ export function Preloader() {
     : isCompact
       ? "inset(16px calc(50vw - 34px) calc(100vh - 84px) calc(50vw - 34px) round 0 0 10px 10px)"
       : "inset(16px calc(50vw - 170px) calc(100vh - 126px) calc(50vw - 170px) round 0 0 12px 12px)";
+
+  const keepExpanded = () => {
+    if (closeTimer.current !== null) {
+      window.clearTimeout(closeTimer.current);
+      closeTimer.current = null;
+    }
+    setExpanded(true);
+  };
+
+  const releaseExpanded = () => {
+    if (closeTimer.current !== null) window.clearTimeout(closeTimer.current);
+    closeTimer.current = window.setTimeout(() => {
+      setExpanded(false);
+      closeTimer.current = null;
+    }, 260);
+  };
 
   return (
     <motion.div
@@ -80,11 +98,20 @@ export function Preloader() {
         contain: "paint",
       }}
     >
+      {!intro && (
+        <div
+          aria-hidden="true"
+          onPointerEnter={keepExpanded}
+          onPointerMove={keepExpanded}
+          onPointerLeave={releaseExpanded}
+          className="fixed left-1/2 top-3 z-[1] h-32 w-[380px] -translate-x-1/2"
+          style={{ pointerEvents: "auto" }}
+        />
+      )}
       <motion.button
         type="button"
         aria-label="MagicYStudio"
-        onPointerEnter={() => setExpanded(true)}
-        onPointerLeave={() => setExpanded(false)}
+        tabIndex={-1}
         className="fixed left-1/2 top-1/2 grid -translate-x-1/2 -translate-y-1/2 place-items-center bg-transparent font-mono uppercase tracking-[0.18em] outline-none"
         initial={{
           opacity: 0,
@@ -111,7 +138,7 @@ export function Preloader() {
             ease: [0.16, 1, 0.3, 1],
           },
         }}
-        style={{ pointerEvents: intro ? "none" : "auto" }}
+        style={{ pointerEvents: "none" }}
       >
         <motion.span
           className="grid place-items-center text-center text-[1.45rem] leading-none"
