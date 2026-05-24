@@ -33,4 +33,41 @@
 
 ### 下一步
 
-进入 M2：删除 [components/site/hero-visual.tsx](components/site/hero-visual.tsx)，改造 [components/site/hero-profile-section.tsx](components/site/hero-profile-section.tsx)，更新 [lib/site-data.ts](lib/site-data.ts) 的 hero copy。
+进入 M3：`npm install lenis`、新增 [components/lenis-provider.tsx](components/lenis-provider.tsx) 挂到 layout、新建 [lib/projects.ts](lib/projects.ts) 静态作品池数据并替换 site-data.ts/works-data.ts 引用。
+
+---
+
+## M2 — Hero 改造（已完成）
+
+### 改动
+
+- **删除** [components/site/hero-visual.tsx](components/site/hero-visual.tsx)（sci-fi-body + 轨道环 + radial blur 全部砍掉）
+- [lib/site-data.ts](lib/site-data.ts) `siteConfig`：
+  - `tagline` → `"AI-native Studio / Solo Builder"`
+  - `headline` 从 `{ line1, line2 }` 改为 `{ fixed: "MagicY", rotating: [3 句] as const }`
+  - `subheadline` / `bio` 替换为 SPEC §2.1 文案，删掉"探索未知/创造可能/构建信息桥梁"自我标榜
+- [components/site/hero-profile-section.tsx](components/site/hero-profile-section.tsx) 完整重写：
+  - 删除中栏 sci-fi-body 视觉、删除左右双 radial blur、删除原 3 列布局
+  - Hero 改为 8/4 分栏：左侧 PP Editorial Ultralight + 斜体的 `RotatingHeadline`（framer-motion `AnimatePresence` 4s 循环 3 句），右侧 Mono 状态卡（avatar 48px + role/stack/based 数据行 + GitHub/Email/Contact CTA）
+  - 顶部加 `00 / 06 — Index` archive 标记 + 右上 `MagicYstudio` mono 锚点
+  - 状态指示器从 emoji ping 改为 mono 大写 `[● status]` 风格
+  - 删除右栏圆形 avatar ring/blur、删除 `rounded-3xl/2xl`，改用方框 + `border-border`
+  - 字号底线 ≥ 18px（subheadline `text-lg`），状态条/数据行 mono 12-13px
+- 公共 `heroProjects` 数组保留在 [lib/site-data.ts](lib/site-data.ts) 不再被 hero 消费——M3 会随 `lib/projects.ts` 一起整体重构
+
+### 验收
+
+- `npm run lint` 0 error
+- `npm run build` 成功，5 静态页全部 prerender 通过
+- 待用户在 :3001 肉眼验收：首屏 4s 切换 3 句 hero copy / 无任何 sci-fi 元素 / 黑底 + Hazard Orange 强调 / 右上 mono 锚点
+
+### 注意
+
+- `RotatingHeadline` 用 `useEffect + setInterval`，CSR 接管后启动，SSR 不闪首句外的内容（避免 hydration mismatch）
+- `aria-live="polite"` 让屏幕阅读器读出切换内容
+- 顶部 `pt-40` 留出 ≥ 160px 上间距，符合 SPEC §3.3 Section 间距要求
+- Hazard Orange 仅出现在状态点 + Contact hover 反转，没有大面积铺色——避免变成"橙色 SaaS"
+
+### 下一步
+
+进入 M3：`npm install lenis`、新增 [components/lenis-provider.tsx](components/lenis-provider.tsx) 挂到 layout、新建 [lib/projects.ts](lib/projects.ts) 静态作品池数据并替换 site-data.ts/works-data.ts 引用。

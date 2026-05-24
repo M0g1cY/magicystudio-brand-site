@@ -1,14 +1,18 @@
 export const siteConfig = {
   name: "MagicY",
   fullName: "MagicYStudio",
-  tagline: "AI Workflow Builder / Independent Developer",
+  tagline: "AI-native Studio / Solo Builder",
   headline: {
-    line1: "探索未知，",
-    line2: "创造可能。",
+    fixed: "MagicY",
+    rotating: [
+      "Building AI workflows that ship.",
+      "From clinical medicine to AI-native systems.",
+      "Independent. Full-stack. Workflow-first.",
+    ] as const,
   },
   subheadline:
-    "在医学与 AI 的交汇处，构建信息桥梁，用内容连接世界，用技术改变未来。",
-  bio: "临床医学背景，关注 AI 如何提升医疗信息处理与全球知识传播。专注于构建 AI 工作流、内容系统与数字化解决方案，连接知识、AI、医学与创造力。",
+    "临床医学背景的独立创作者。一个人完成工作流搭建、全栈开发、内容生产——目前已上线 5 个 AI 工作流，把医学科普生产效率提到 10×。",
+  bio: "Clinical medicine grad turned independent AI builder. I design workflows, ship full-stack products, and run a one-person content system end-to-end.",
   email: process.env.NEXT_PUBLIC_EMAIL || "",
   github: process.env.NEXT_PUBLIC_GITHUB_URL || "",
   wechat: process.env.NEXT_PUBLIC_WECHAT || "",
