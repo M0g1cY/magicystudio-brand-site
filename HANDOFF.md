@@ -104,4 +104,45 @@
 
 ### 下一步
 
-进入 M4：重写 [components/site/project-card.tsx](components/site/project-card.tsx) 与 [components/site/featured-projects.tsx](components/site/featured-projects.tsx) 为杂志式大图布局 + Mono 状态标签 + hover 颜色反转，新建 [components/site/section-marker.tsx](components/site/section-marker.tsx) 和 [components/site/mono-status.tsx](components/site/mono-status.tsx) 复用组件。
+进入 M5：竖向滚动驱动的 Timeline（useScroll/useInView 节点逐个亮起）+ navbar 删主题切换 + services LIMITED 标 + contact 水印 + 最终 lint/build/部署。
+
+---
+
+## M4 — Project Card + Featured Works（已完成）
+
+### 改动
+
+- 新增 [components/site/section-marker.tsx](components/site/section-marker.tsx)：`<SectionMarker n={1} total={6} label="Work" />`，Geist Mono + zfill `01 / 06 — Work` 风格
+- 新增 [components/site/mono-status.tsx](components/site/mono-status.tsx)：`<MonoStatus state="SHIPPED" />`，把 `ProjectStatus | LIMITED | AVAILABLE` 映射到小写 mono 标签 + 圆点（SHIPPED/BUILDING/AVAILABLE 用 primary 橙点，IN_PROGRESS/LIMITED 用 muted 灰点）
+- 重写 [components/site/project-card.tsx](components/site/project-card.tsx)：
+  - 类型签名从旧 `{ id, name, description, techStack, status, year, image }` 改为 `Project`（来自 lib/projects.ts），新增 `variant: 'featured' | 'grid'`、`index`
+  - featured 卡占 12 列（aspect 16/9 + 5xl 标题），grid 卡占 6 列（aspect 4/3 + 2xl 标题）
+  - 删除 `rounded-2xl/`、`shadow-md`、`-translate-y-1`，改用方框 `border border-border` + hover **整卡颜色反转**（`bg-card → bg-primary` / `text → primary-foreground`）
+  - 图片左上角 absolute 定位 MonoStatus 浮标，右上角 mono 年份戳
+  - tag 改为 mono 大写边框胶囊，hover 时边框跟随反转
+  - 整卡支持 `<a>` 包裹（`project.links[0].href` 存在则渲染外链）
+- 重写 [components/site/featured-projects.tsx](components/site/featured-projects.tsx)：
+  - section 顶部加 `<SectionMarker n={1} total={6} label="Work" />` + 杂志大字 `Selected works.`（PP Editorial Display + 斜体 italic 200）
+  - 数据布局：`featuredProjects[0]` 渲染为 `variant="featured"` 大卡，`rest` 渲染为 `variant="grid"` 小卡
+  - 删除原 sm:2 lg:3 等距 grid + bg-muted/30 段落底色
+  - 右上角加 mono `view all →` CTA（hover 反转到 primary）
+- 重写 [components/site/projects-grid.tsx](components/site/projects-grid.tsx)：直接读 `worksGrid` from lib/projects.ts（不再走 works-data 旧 shim 字段映射），用新 ProjectCard
+- [components/site/featured-project.tsx](components/site/featured-project.tsx) 与 [components/site/works-hero.tsx](components/site/works-hero.tsx) / [components/site/works-cta.tsx](components/site/works-cta.tsx) 暂未触动（仍用 works-data shim），按 SPEC §5 留 v1.2
+
+### 验收
+
+- `npm run lint` 0 error
+- `npm run build` 成功，5 静态页全部 prerender 通过
+- 待用户在 :3001 肉眼验收：3 张 Featured Work 卡显示真实作品 + Mono 状态标签可见 + hover 整卡橙色反转 + Featured 大卡是 16:9 杂志式，下面 2 张是 4:3 grid
+
+### 注意
+
+- ProjectCard 用 `Wrapper = Link href ? "a" : "div"` 模式：lib/projects.ts 当前条目都没填 `links`，所以渲染为 `<div>`；后续填了 Live URL 后自动升级为 `<a target="_blank">`。
+- hover 反转包括 image overlay 渐隐——image 本身未反色（保留视觉信息），但下面文字区整体橙底白字
+- mono 字体走 `--font-mono`（Geist Mono），display 字体走 `--font-display`（PP Editorial）；body 仍是 Geist Sans
+- 用了 `aspect-[16/9]` / `aspect-[4/3]`（SPEC §5 删掉 `aspect-[16/10]`）
+- /works 子页 `FeaturedProject` / `WorksHero` / `WorksCTA` 仍是旧设计 + works-data shim——M5 收尾时补全或留 v1.2
+
+### 下一步
+
+进入 M5：竖向滚动驱动的 Timeline（useScroll/useInView 节点逐个亮起）+ navbar 删主题切换 + services LIMITED 标 + contact 水印 + 最终 lint/build/部署。

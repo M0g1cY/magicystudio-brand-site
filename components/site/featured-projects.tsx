@@ -1,90 +1,53 @@
 "use client";
 
-import Image from "next/image";
 import { motion } from "framer-motion";
-import { FiArrowRight, FiArrowUpRight } from "react-icons/fi";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { FiArrowRight } from "react-icons/fi";
 import { featuredProjects } from "@/lib/projects";
+import { ProjectCard } from "@/components/site/project-card";
+import { SectionMarker } from "@/components/site/section-marker";
 
 export function FeaturedProjects() {
+  const [hero, ...rest] = featuredProjects;
+
   return (
-    <section id="works" className="py-28 lg:py-32 px-6 lg:px-12 bg-muted/30">
-      <div className="max-w-7xl mx-auto space-y-16">
-        {/* Section header */}
+    <section
+      id="works"
+      className="relative py-32 lg:py-40 px-6 lg:px-12 xl:px-20"
+    >
+      <div className="max-w-[1280px] mx-auto space-y-16 lg:space-y-20">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.5 }}
-          className="flex items-end justify-between"
+          className="flex items-end justify-between gap-6"
         >
-          <div className="space-y-3">
-            <p className="text-xs font-medium text-muted-foreground/70 uppercase tracking-[0.15em]">
-              Featured Works
-            </p>
-            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">
-              精选作品
+          <div className="space-y-6">
+            <SectionMarker n={1} total={6} label="Work" />
+            <h2 className="font-display tracking-[-0.02em] text-foreground text-5xl sm:text-6xl lg:text-[5.5rem] leading-[0.95]">
+              Selected <span className="italic font-[200]">works.</span>
             </h2>
           </div>
           <a
             href="/works"
-            className="inline-flex items-center gap-1 rounded-full hover:bg-muted text-sm font-medium h-8 px-2.5 transition-colors group"
+            className="hidden sm:inline-flex items-center gap-2 font-mono text-[0.72rem] uppercase tracking-[0.18em] h-10 px-4 border border-border text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors"
           >
-            查看全部{" "}
-            <FiArrowRight className="ml-1 group-hover:translate-x-0.5 transition-transform" size={16} />
+            view all
+            <FiArrowRight size={14} />
           </a>
         </motion.div>
 
-        {/* Project cards */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 lg:gap-6">
-          {featuredProjects.map((project, i) => (
-            <motion.div
+        <div className="grid lg:grid-cols-12 gap-6 lg:gap-8">
+          {hero && (
+            <ProjectCard project={hero} variant="featured" index={0} />
+          )}
+          {rest.map((project, i) => (
+            <ProjectCard
               key={project.id}
-              initial={{ opacity: 0, y: 24 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-80px" }}
-              transition={{ duration: 0.5, delay: i * 0.1 }}
-            >
-              <Card className="group h-full border border-border/60 shadow-sm hover:shadow-md hover:border-border transition-all duration-300">
-                <CardContent className="p-6 space-y-4">
-                  {/* Project screenshot */}
-                  <div className="relative aspect-video rounded-lg overflow-hidden bg-muted/30">
-                    <Image
-                      src={project.image}
-                      alt={project.name}
-                      fill
-                      className="object-cover group-hover:scale-[1.03] transition-transform duration-500"
-                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <div className="flex items-start justify-between">
-                      <h3 className="font-semibold group-hover:text-primary transition-colors">
-                        {project.name}
-                      </h3>
-                      <FiArrowUpRight className="text-muted-foreground group-hover:text-primary transition-colors shrink-0 mt-0.5" size={16} />
-                    </div>
-                    <p className="text-sm text-muted-foreground leading-relaxed">
-                      {project.oneLiner}
-                    </p>
-                  </div>
-
-                  <div className="flex flex-wrap gap-1.5">
-                    {project.tags.map((tag) => (
-                      <Badge
-                        key={tag}
-                        variant="secondary"
-                        className="rounded-full text-xs font-normal"
-                      >
-                        {tag}
-                      </Badge>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
+              project={project}
+              variant="grid"
+              index={i + 1}
+            />
           ))}
         </div>
       </div>
