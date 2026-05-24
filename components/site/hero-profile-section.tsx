@@ -7,7 +7,7 @@ export function HeroProfileSection() {
   const { rotating } = siteConfig.headline;
   const statusText = siteConfig.statusText || "available for new work";
   const location = siteConfig.location || "remote";
-  const stack = ["next", "ts", "coze", "ai"];
+  const stack = ["claude", "codex", "coze", "next"];
 
   return (
     <section
