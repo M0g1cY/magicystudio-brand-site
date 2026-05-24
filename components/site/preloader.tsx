@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 
 const SEEN_KEY = "preloader-seen";
+const isDev = process.env.NODE_ENV === "development";
 
 type Target = {
   x: number;
@@ -18,7 +19,11 @@ export function Preloader() {
 
   useEffect(() => {
     if (reduceMotion) return;
-    if (window.sessionStorage.getItem(SEEN_KEY)) return;
+    const forceReplay = window.location.search.includes("preloader=1");
+    if (!isDev && !forceReplay && window.sessionStorage.getItem(SEEN_KEY)) {
+      return;
+    }
+    if (forceReplay) window.sessionStorage.removeItem(SEEN_KEY);
 
     const anchor = document.getElementById("wordmark-anchor");
     if (!anchor) return;
