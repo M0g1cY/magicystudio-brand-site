@@ -269,3 +269,9 @@ master  →  v2-rebrand (M1-M5 v2 改造)
 ## v3 M2 - Hero TokenAssembler (Codex)
 
 Implemented the real hero token assembly in [components/site/token-assembler.tsx](components/site/token-assembler.tsx): first paint stays as the plain first phrase, then tokens assemble with deterministic jitter, staggered entry, and a temporary electric border flash. Reduced-motion users get the quieter fade swap. [components/site/hero-profile-section.tsx](components/site/hero-profile-section.tsx) now consumes `<TokenAssembler phrases={rotating} />`, removes the inline rotating headline, and marks the hero contact CTA with `data-cursor="build"`. Validation passed: `npm run lint` and `npm run build`.
+
+---
+
+## v3 M3 - Project Card Workflow Hover (Codex)
+
+Expanded [components/site/project-card.tsx](components/site/project-card.tsx) so featured cards expose the v3 workflow evidence on hover/focus: the outer card now carries `data-cursor="view"`, keeps the orange inversion, and renders staggered mono workflow rows plus the project metric as an editorial bottom-right label. Grid cards without `workflow` / `metric` keep the v2 behavior. Keyboard parity is provided through focus-visible card states and Framer focus variants. Validation passed: `npm run lint` and `npm run build`.
