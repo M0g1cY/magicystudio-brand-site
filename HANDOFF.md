@@ -146,3 +146,63 @@
 ### 下一步
 
 进入 M5：竖向滚动驱动的 Timeline（useScroll/useInView 节点逐个亮起）+ navbar 删主题切换 + services LIMITED 标 + contact 水印 + 最终 lint/build/部署。
+
+---
+
+## M5 — Timeline + 收尾（已完成）
+
+### 改动
+
+- [lib/site-data.ts](lib/site-data.ts)：
+  - `timeline` 完整重写为 SPEC §2.2 内容（2024 / 2025 Building in quiet / 2026 / NOW），新增 `projectIds: string[]` 字段把节点和作品挂钩；2025 节点 description 留空，避免"学习 AI"叙事
+  - `services` 全部条目加 `available: boolean`，`05 Research Pipeline` 设为 `false`
+  - 把 `timeline` 和 `services` 都标为 `as const` 让消费方拿到 readonly 推断（`renderTitle` 同步收 `readonly string[]`）
+- 重写 [components/site/about-timeline.tsx](components/site/about-timeline.tsx)：
+  - 横向 4 列改为竖向 12 列叙事，每节点一行 `border-b border-border`（最后一行除外）
+  - `useInView` + `margin: "-30% 0px -30% 0px"`，节点滚到屏幕中段时圆点从 border 灰切到 primary 橙 + ping 动画
+  - 右侧挂 `projectIds` 对应的作品缩略图入口（链接到 `/works#<id>`），`projectById()` 解析
+  - 顶部 `<SectionMarker n={3} total={6} label="About" />` + 杂志大字 `How I got here.`
+- 重写 [components/site/navbar.tsx](components/site/navbar.tsx)：
+  - 删除 `theme` state、`toggleTheme()`、`FiSun/FiMoon` 引入、`FiSearch`、`Button` shadcn 引入
+  - logo 改为 mono `MAGICY` + muted `studio` 后缀，nav links 全 mono 12px uppercase tracking 0.18，contact CTA 改 mono 边框反转按钮
+  - mobile menu 同步 mono 化，去掉主题切换按钮
+- 重写 [components/site/services-section.tsx](components/site/services-section.tsx)：
+  - 顶部 `<SectionMarker n={4} total={6} label="Services" />` + 杂志大字 `What I'm taking on.`
+  - 6 卡片改为 `gap-px bg-border` 的网格分割线（无圆角，像 archive grid），icon 改为方框 + 1.4 stroke
+  - 每卡底部加 `<MonoStatus state={service.available ? 'AVAILABLE' : 'LIMITED'} />`
+- 重写 [components/site/contact-section.tsx](components/site/contact-section.tsx)：
+  - `<SectionMarker n={5} total={6} label="Contact" />` + 杂志大字 `Let's build something.`
+  - 4 联系方式改为 2×2 grid，方框 icon + mono label + 大字 value
+  - 删除原 `text-amber-800` 旧色调
+  - 底部 footer 加 `last deployed: 2026.05.24` + `built with claude code` mono 水印（可被 `NEXT_PUBLIC_DEPLOY_STAMP` 环境变量覆盖，部署到 Vercel 时由 build 期注入）
+
+### 验收
+
+- `npm run lint` 0 error
+- `npm run build` 成功，5 静态页全部 prerender 通过
+- 待用户在 :3001 肉眼验收：
+  - About: timeline 节点滚到中段时圆点点亮 + 右侧项目缩略图入口
+  - Services: 5 项 AVAILABLE + 05 LIMITED
+  - Contact: 4 个联系卡 + footer 双水印
+  - Navbar: 无主题切换按钮，mono 风格
+  - 整站滚动通过 lenis 平滑
+
+### 注意
+
+- `NEXT_PUBLIC_DEPLOY_STAMP` 环境变量：默认用当前 ISO 日期；部署到 Vercel 时建议在 project env 加 `NEXT_PUBLIC_DEPLOY_STAMP=$(date -u +%Y.%m.%d)` 或在 `next.config.ts` 里 `process.env` 注入构建时间——本期未做，由用户部署时按需配置
+- `services as const` + `highlight: readonly string[]`：`renderTitle` 已同步类型，但若以后从 DB / CMS 读 services 需放开 readonly
+- /works 子页（works-hero / featured-project / projects-grid / works-cta）的 hero / cta / featured-project 仍用旧风格 + works-data shim——按 SPEC §5 留 v1.2 处理，不是 v1.1 范围
+- 旧 `personal-skills.html` 在 public/ 下未删，about-timeline 不再链接它，留作历史
+- Timeline `description` 留空时不渲染 `<p>` 节点，2025 节点视觉上只剩年份 + "Building in quiet" 标题——符合"不撒谎不解释"原则
+
+### 部署
+
+- 上 Vercel 前再执行一次 `npm run lint && npm run build`
+- 部署后人工检查：
+  - L5 北极星：找 3 个非技术朋友打开站，3 秒后能不能说出"这个人不太一样"
+  - resume-tool 必须先部署到 Vercel + Railway 才能让 C 位 3 之一真正可点
+  - 医学 Coze 工作流截图、resume-tool 录屏需替换 lib/projects.ts 中的占位 image（目前 resume-tool 用 /workspace.png、harbor-table 用 /封面.png）
+
+### v1.1 完结
+
+5 个 module 全部 commit：M1 → M2 → M3 → M4 → M5。worktree 流程合规（feature 分支 v2-rebrand），SPEC §6 依赖约束遵守（只新增 lenis）。下一阶段是 v1.2：补 /works 子页视觉一致性 + 接入真实媒体资产。

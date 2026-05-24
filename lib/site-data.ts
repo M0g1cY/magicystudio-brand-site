@@ -37,64 +37,80 @@ export { featuredProjects } from "./projects";
 export const timeline = [
   {
     year: "2024",
-    title: "临床医学毕业",
-    description: "完成临床医学学业，开始探索职业与技术的交汇方向。",
+    title: "Clinical Medicine, B.S.",
+    description: "临床医学毕业。跨界起点。",
+    projectIds: [],
   },
   {
     year: "2025",
-    title: "学习 AI 工具与自动化",
-    description: "系统学习 Prompt Engineering、AI 自动化、工作流设计与工具链。",
+    title: "Building in quiet",
+    description: "",
+    projectIds: ["medical-ai-workflow"],
   },
   {
     year: "2026",
-    title: "构建个人品牌与产品",
-    description: "打造 MagicYStudio Workspace 与个人品牌网站，沉淀知识体系。",
+    title: "Shipping AI products",
+    description:
+      "5 工作流医学内容系统、resume-tool、harbor-table 相继上线。",
+    projectIds: ["medical-content-pipeline", "resume-tool", "harbor-table"],
   },
   {
-    year: "未来",
-    title: "持续构建 AI Native 产品",
-    description: "聚焦 AI 原生应用与自动化系统，持续输出工具与内容。",
+    year: "NOW",
+    title: "Looking for AI-native teams",
+    description: "开放远程 / 海外协作机会。",
+    projectIds: [],
   },
-];
+] as const;
 
 export const services = [
   {
     id: "01",
     title: "AI Workflow Design",
     highlight: ["AI", "Workflow"],
-    description: "设计端到端的 AI 工作流，从需求分析到系统落地，让 AI 真正融入业务流程。",
+    description:
+      "设计端到端的 AI 工作流，从需求分析到系统落地——已在 Coze 上跑通医学科普 5 工作流体系。",
+    available: true,
   },
   {
     id: "02",
     title: "AI Automation",
     highlight: ["AI", "Automation"],
-    description: "构建自动化管道，连接多模型与外部服务，减少重复性人工操作。",
+    description:
+      "构建自动化管道，连接多模型与外部服务，把重复人工动作替换为可观测的 pipeline。",
+    available: true,
   },
   {
     id: "03",
     title: "Prompt Engineering",
     highlight: ["Prompt"],
     description: "结构化 Prompt 设计与优化，提升 AI 输出质量与可控性。",
+    available: true,
   },
   {
     id: "04",
     title: "AI Content Systems",
     highlight: ["AI", "Content"],
-    description: "搭建 AI 驱动的内容生产系统，实现多语言、多平台的内容自动化。",
+    description:
+      "AI 驱动的内容生产系统，多语言、多平台分发——医学科普 10× 效率即来自该体系。",
+    available: true,
   },
   {
     id: "05",
     title: "Research Pipeline",
     highlight: ["Research"],
-    description: "构建 AI 辅助研究管道，加速文献检索、信息提取与知识整合。",
+    description:
+      "AI 辅助研究管道，文献检索、信息提取与知识整合。当前案例较少，按 limited 接单。",
+    available: false,
   },
   {
     id: "06",
     title: "Creative Frontend",
     highlight: ["Creative"],
-    description: "打造简洁、高效的产品界面，平衡美学与功能。",
+    description:
+      "Next.js / framer-motion / lenis 的高质感前端实现——见 harbor-table。",
+    available: true,
   },
-];
+] as const;
 
 export const contactInfo = [
   { label: "Email", value: siteConfig.email, href: `mailto:${siteConfig.email}` },

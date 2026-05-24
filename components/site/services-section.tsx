@@ -9,30 +9,26 @@ import {
   FlaskConical,
   Palette,
 } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
 import { services } from "@/lib/site-data";
+import { SectionMarker } from "@/components/site/section-marker";
+import { MonoStatus } from "@/components/site/mono-status";
 
 const iconMap: Record<string, React.ReactNode> = {
-  "01": <Workflow size={22} strokeWidth={1.6} />,
-  "02": <Zap size={22} strokeWidth={1.6} />,
-  "03": <Sparkles size={22} strokeWidth={1.6} />,
-  "04": <FileText size={22} strokeWidth={1.6} />,
-  "05": <FlaskConical size={22} strokeWidth={1.6} />,
-  "06": <Palette size={22} strokeWidth={1.6} />,
+  "01": <Workflow size={20} strokeWidth={1.4} />,
+  "02": <Zap size={20} strokeWidth={1.4} />,
+  "03": <Sparkles size={20} strokeWidth={1.4} />,
+  "04": <FileText size={20} strokeWidth={1.4} />,
+  "05": <FlaskConical size={20} strokeWidth={1.4} />,
+  "06": <Palette size={20} strokeWidth={1.4} />,
 };
 
-function renderTitle(title: string, highlight: string[]) {
-  const words = title.split(" ");
-  return words.map((word, i) => {
+function renderTitle(title: string, highlight: readonly string[]) {
+  return title.split(" ").map((word, i) => {
     const isHighlight = highlight.includes(word);
     return (
       <span key={i}>
         {i > 0 && " "}
-        {isHighlight ? (
-          <span className="text-primary">{word}</span>
-        ) : (
-          <span>{word}</span>
-        )}
+        <span className={isHighlight ? "text-primary" : ""}>{word}</span>
       </span>
     );
   });
@@ -40,63 +36,58 @@ function renderTitle(title: string, highlight: string[]) {
 
 export function ServicesSection() {
   return (
-    <section id="services" className="py-28 lg:py-32 px-6 lg:px-12">
-      <div className="max-w-7xl mx-auto space-y-16">
-        {/* Section header */}
+    <section
+      id="services"
+      className="relative py-32 lg:py-40 px-6 lg:px-12 xl:px-20"
+    >
+      <div className="max-w-[1280px] mx-auto space-y-16 lg:space-y-20">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.5 }}
-          className="max-w-2xl space-y-5"
+          className="space-y-6 max-w-3xl"
         >
-          <p className="text-xs font-medium text-muted-foreground/70 uppercase tracking-[0.15em]">
-            Services
-          </p>
-          <h2 className="text-3xl sm:text-4xl font-bold tracking-tight leading-tight">
-            从想法到落地，
-            <br />
-            我构建 <span className="text-primary">AI 工作流</span>与<span className="text-primary">数字系统</span>。
+          <SectionMarker n={4} total={6} label="Services" />
+          <h2 className="font-display tracking-[-0.02em] text-foreground text-5xl sm:text-6xl lg:text-[5.5rem] leading-[0.95]">
+            What I&apos;m taking <span className="italic font-[200]">on.</span>
           </h2>
-          <p className="text-sm text-muted-foreground/70 leading-relaxed max-w-lg">
-            结合医学背景、AI 工具和自动化思维，将复杂信息转化为可执行的系统与产品。
+          <p className="text-foreground/75 leading-[1.7] max-w-[52ch] text-lg">
+            结合医学背景、AI 工具与全栈实现把复杂信息变成可观测的系统。下面六项里只接 5 项——research pipeline 案例还少，按 limited 接。
           </p>
         </motion.div>
 
-        {/* Service cards — 2 rows × 3 columns */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 lg:gap-6">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-px bg-border">
           {services.map((service, i) => (
-            <motion.div
+            <motion.article
               key={service.id}
               initial={{ opacity: 0, y: 24 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-60px" }}
-              transition={{ duration: 0.4, delay: i * 0.08 }}
+              transition={{ duration: 0.45, delay: i * 0.06 }}
+              className="group relative bg-background hover:bg-card/80 transition-colors p-6 lg:p-7 space-y-5 min-h-[220px]"
             >
-              <Card className="group h-full rounded-2xl border border-border/40 bg-card/70 backdrop-blur-sm shadow-none hover:shadow-lg hover:border-primary/25 hover:-translate-y-1 transition-all duration-400">
-                <CardContent className="p-6 lg:p-7 space-y-5">
-                  {/* Icon + Number */}
-                  <div className="flex items-start justify-between">
-                    <span className="inline-flex items-center justify-center size-10 rounded-xl bg-accent text-primary">
-                      {iconMap[service.id]}
-                    </span>
-                    <span className="text-2xl font-bold text-muted-foreground/15 tabular-nums leading-none">
-                      {service.id}
-                    </span>
-                  </div>
+              <div className="flex items-start justify-between">
+                <span className="inline-flex items-center justify-center h-10 w-10 border border-border text-foreground group-hover:border-primary group-hover:text-primary transition-colors">
+                  {iconMap[service.id]}
+                </span>
+                <span className="font-mono text-[0.72rem] uppercase tracking-[0.18em] text-muted-foreground">
+                  {service.id}
+                </span>
+              </div>
 
-                  {/* Title with highlighted keywords */}
-                  <h3 className="font-bold text-base leading-snug max-w-[200px]">
-                    {renderTitle(service.title, service.highlight)}
-                  </h3>
+              <h3 className="font-display text-2xl lg:text-3xl tracking-[-0.01em] leading-[1.1]">
+                {renderTitle(service.title, service.highlight)}
+              </h3>
 
-                  {/* Description */}
-                  <p className="text-[0.8rem] text-muted-foreground/60 leading-relaxed">
-                    {service.description}
-                  </p>
-                </CardContent>
-              </Card>
-            </motion.div>
+              <p className="text-foreground/70 leading-[1.6] text-base">
+                {service.description}
+              </p>
+
+              <div className="pt-2">
+                <MonoStatus state={service.available ? "AVAILABLE" : "LIMITED"} />
+              </div>
+            </motion.article>
           ))}
         </div>
       </div>
