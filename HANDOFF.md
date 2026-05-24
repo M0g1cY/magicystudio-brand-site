@@ -206,3 +206,60 @@
 ### v1.1 完结
 
 5 个 module 全部 commit：M1 → M2 → M3 → M4 → M5。worktree 流程合规（feature 分支 v2-rebrand），SPEC §6 依赖约束遵守（只新增 lenis）。下一阶段是 v1.2：补 /works 子页视觉一致性 + 接入真实媒体资产。
+
+---
+
+## v3 Cockpit 升级 — 框架就位（Claude Code 完成，Codex 接手）
+
+v2 是「安静的高级模板」，v3 不换风格，**换记忆机制**。新增 4 个强记忆点：Token Assembler / Card hover Workflow Steps / Sticky 5-beat ProcessStory / Custom Cursor Cockpit。
+
+### 完整契约
+
+- [docs/SPEC-v3.md](docs/SPEC-v3.md) — codex 蓝本
+- [docs/TASKS-v3.md](docs/TASKS-v3.md) — 5 module 线性清单（M2-M5 由 codex 实现）
+
+### 已就位的脚手架（master Claude Code 完成）
+
+- 分支 `v3-cockpit` 起自 v2 HEAD，与 `v2-rebrand` 平行
+- [app/globals.css](app/globals.css) 新增 `--acid` (~#B5FF3D) + `--electric` (~#3D9CFF) token，`@theme inline` 暴露 `--color-acid` / `--color-electric`，**v2 既有色板不动**
+- [lib/projects.ts](lib/projects.ts) `Project` 类型扩展 `workflow?: ProjectWorkflowStep[]` + `metric?: string`，3 个 C 位项目数据填入：
+  - medical-content-pipeline → 5 步 ideation/copywriting/imagery/scripting/review，metric `10× output`
+  - resume-tool → 5 步 paste JD/AI rewrite/ATS score/PDF export/deploy，metric `end-to-end / solo`
+  - harbor-table → 5 步 design/implement/optimize/audit/deploy，metric `Lighthouse 95-100`
+- [components/site/mono-status.tsx](components/site/mono-status.tsx) 扩展状态：`LIVE` (acid) / `LINK` (electric) / `INTERACTIVE` (electric)，原状态保持不变
+- 新增 3 个 stub 文件，顶部都有 `// TODO(codex):` 行为契约：
+  - [components/site/token-assembler.tsx](components/site/token-assembler.tsx) — 当前是 v2 风格 fade swap 占位，codex 替换为 token 拆解重组
+  - [components/site/process-story.tsx](components/site/process-story.tsx) — 当前是单段占位 section，codex 替换为 sticky 5 节拍
+  - [components/site/cursor-cockpit.tsx](components/site/cursor-cockpit.tsx) — 当前 `return null`，codex 实现 RAF 跟随 + data-cursor 状态机
+
+### 三色信号铁律（任何人不可破）
+
+| 颜色 | 仅用于 |
+|---|---|
+| Hazard Orange `--primary` | SHIPPED / primary CTA / hover 反转底色 / cursor BUILD |
+| Acid Green `--acid` | AVAILABLE / LIVE / cursor SELECT / ProcessStory SHIPPED 节拍点 |
+| Electric Blue `--electric` | LINK / INTERACTIVE / Token Assembler 闪烁边框 / cursor VIEW |
+
+任意一处把 acid / electric 当装饰色铺面积 → 视觉系统崩塌。SPEC-v3 §2 写明。
+
+### 验收
+
+- `npm run lint` 0 error
+- `npm run build` 成功，5 静态页全部 prerender 通过
+- v2 视觉零回归：脚手架仅扩展 token 与类型，token-assembler 的 fade 占位、process-story 的占位段不破坏现有页面流；codex M2-M5 完成后才会出现 v3 体验
+
+### Codex 执行入口
+
+新会话第一条指令应是：
+
+> 按 [docs/TASKS-v3.md](docs/TASKS-v3.md) 从 M2 开始执行。规范是 [docs/SPEC-v3.md](docs/SPEC-v3.md)。每个 module 单 commit + 在 HANDOFF.md 末尾追加段落。每个 commit 前 `npm run lint && npm run build` 必须通过。
+
+### v3 完成后的合并路径
+
+```
+master  →  v2-rebrand (M1-M5 v2 改造)
+              ↓
+            v3-cockpit (Claude Code 脚手架 + Codex M2-M5 实现)
+              ↓
+            合并回 master + 部署 Vercel
+```

@@ -1,6 +1,9 @@
 /**
  * v2 portfolio source of truth — 5+1 SHIPPED + IN_PROGRESS works.
  * SPEC §2.3. Static TS, no Notion / 飞书 API by design.
+ *
+ * v3 extension: optional `workflow` (≤ 5 steps) and `metric` for featured tier.
+ * See docs/SPEC-v3.md §3.
  */
 
 export type ProjectStatus = "SHIPPED" | "BUILDING" | "IN_PROGRESS";
@@ -8,6 +11,11 @@ export type ProjectStatus = "SHIPPED" | "BUILDING" | "IN_PROGRESS";
 export interface ProjectLink {
   label: string;
   href: string;
+}
+
+export interface ProjectWorkflowStep {
+  id: string;     // "01" / "02" / ...
+  label: string;  // mono-uppercase friendly: "ideation" / "选题"
 }
 
 export interface Project {
@@ -23,6 +31,10 @@ export interface Project {
   caseStudy?: string;
   /** featured = C 位 3，secondary = 第二梯队，inProgress = 加 1 */
   tier: "featured" | "secondary" | "inProgress";
+  /** v3: ordered workflow steps, ≤ 5. Required for featured tier. */
+  workflow?: ProjectWorkflowStep[];
+  /** v3: result metric, e.g. "10× output". One short phrase. */
+  metric?: string;
 }
 
 export const projects: Project[] = [
@@ -39,6 +51,14 @@ export const projects: Project[] = [
     year: "2026",
     image: "/aimedicalworkflow.png",
     tier: "featured",
+    workflow: [
+      { id: "01", label: "ideation" },
+      { id: "02", label: "copywriting" },
+      { id: "03", label: "imagery" },
+      { id: "04", label: "scripting" },
+      { id: "05", label: "review" },
+    ],
+    metric: "10× output",
   },
   {
     id: "resume-tool",
@@ -51,6 +71,14 @@ export const projects: Project[] = [
     year: "2026",
     image: "/workspace.png",
     tier: "featured",
+    workflow: [
+      { id: "01", label: "paste JD" },
+      { id: "02", label: "AI rewrite" },
+      { id: "03", label: "ATS score" },
+      { id: "04", label: "PDF export" },
+      { id: "05", label: "deploy" },
+    ],
+    metric: "end-to-end / solo",
   },
   {
     id: "harbor-table",
@@ -63,6 +91,14 @@ export const projects: Project[] = [
     year: "2026",
     image: "/封面.png",
     tier: "featured",
+    workflow: [
+      { id: "01", label: "design" },
+      { id: "02", label: "implement" },
+      { id: "03", label: "optimize" },
+      { id: "04", label: "audit" },
+      { id: "05", label: "deploy" },
+    ],
+    metric: "Lighthouse 95-100",
   },
 
   // ============ 第二梯队 2 个 ============
