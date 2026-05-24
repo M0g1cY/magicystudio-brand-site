@@ -30,51 +30,9 @@ export const navLinks = [
   { label: "联系", href: "#contact" },
 ];
 
-export const featuredProjects = [
-  {
-    id: "workspace",
-    title: "MagicYStudio Workspace",
-    description: "个人 AI 工作台，集成 Prompt 管理、自动化流程与知识库。",
-    tags: ["Next.js", "AI", "Full-Stack"],
-    image: "/workspace.png",
-    href: "/works/workspace",
-  },
-  {
-    id: "geo-content",
-    title: "GEO Content System",
-    description: "基于 AI 的地理内容生成系统，自动化多语言内容生产。",
-    tags: ["AI Agent", "Automation", "Content"],
-    image: "/geo.png",
-    href: "/works/geo-content",
-  },
-  {
-    id: "dify-pipeline",
-    title: "Dify Automation Pipeline",
-    description: "基于 Dify 平台的自动化工作流管道，连接多模型与外部服务。",
-    tags: ["Dify", "Workflow", "Integration"],
-    image: "/dify2.png",
-    href: "/works/dify-pipeline",
-  },
-];
-
-export const heroProjects = [
-  {
-    id: "workspace",
-    title: "MagicYStudio Workspace",
-    description: "AI 驱动的个人工作台，一站式管理 Prompt、工作流与项目。",
-    tag: "即将发布",
-    image: "/workspace.png",
-    href: "/works/workspace",
-  },
-  {
-    id: "ai-medical",
-    title: "AI Medical Workflow",
-    description: "医学 AI 工作流系统，结合临床知识图谱与自动化推理。",
-    tag: "开发中",
-    image: "/aimedicalworkflow.png",
-    href: "/works/ai-medical",
-  },
-];
+// v2 portfolio source of truth lives in lib/projects.ts (SPEC §2.3).
+// Re-exported here so existing imports from "@/lib/site-data" keep working.
+export { featuredProjects } from "./projects";
 
 export const timeline = [
   {

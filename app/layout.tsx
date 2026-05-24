@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import localFont from "next/font/local";
+import { LenisProvider } from "@/components/lenis-provider";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -67,7 +68,10 @@ export default function RootLayout({
       className={`dark ${geistSans.variable} ${geistMono.variable} ${editorial.variable} h-full antialiased`}
       suppressHydrationWarning
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <LenisProvider />
+        {children}
+      </body>
     </html>
   );
 }

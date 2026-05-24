@@ -71,3 +71,37 @@
 ### 下一步
 
 进入 M3：`npm install lenis`、新增 [components/lenis-provider.tsx](components/lenis-provider.tsx) 挂到 layout、新建 [lib/projects.ts](lib/projects.ts) 静态作品池数据并替换 site-data.ts/works-data.ts 引用。
+
+---
+
+## M3 — Lenis + 数据层（已完成）
+
+### 改动
+
+- `npm install lenis@1.3.23`（唯一新增依赖，符合 SPEC §6 约束）
+- 新增 [components/lenis-provider.tsx](components/lenis-provider.tsx)：client component，`useEffect` 内挂 Lenis 实例 + RAF 循环；`prefers-reduced-motion: reduce` 时直接返回不挂 lenis；卸载时 cancelAnimationFrame + lenis.destroy()
+- [app/layout.tsx](app/layout.tsx) 顶层挂入 `<LenisProvider />`（在 children 之前），保证全站平滑滚动
+- 新增 [lib/projects.ts](lib/projects.ts) 作为 v2 作品池单一数据源（SPEC §2.3）：
+  - `Project` 类型：`id / name / oneLiner / description? / tags / status: 'SHIPPED' | 'BUILDING' | 'IN_PROGRESS' / year / image / links? / caseStudy? / tier`
+  - 5+1 项目数据：medical-content-pipeline / resume-tool / harbor-table（C 位 3）+ magicystudio-workspace / medical-ai-workflow（第二梯队）+ lifeos-dashboard（IN_PROGRESS）
+  - 暴露 `featuredProjects` / `secondaryProjects` / `inProgressProjects` / `worksFeatured` / `worksGrid` / `projectById()`
+- [lib/site-data.ts](lib/site-data.ts) 删除旧 `featuredProjects` / `heroProjects` 字面量，改为 `export { featuredProjects } from "./projects"` re-export，避免 component import 路径大面积重写
+- [lib/works-data.ts](lib/works-data.ts) 完整重写为 lib/projects.ts 的薄 shim：通过 `toLegacy()` 把新字段映射到 `featuredProject.tagline` / `techStack` / `status` 旧字段，让 [components/site/featured-project.tsx](components/site/featured-project.tsx) / [components/site/projects-grid.tsx](components/site/projects-grid.tsx) M3 不需要触动也能编译
+- [components/site/featured-projects.tsx](components/site/featured-projects.tsx) import 从 `@/lib/site-data` 切到 `@/lib/projects`，字段从 `title/description` 改为 `name/oneLiner`（视觉重写留 M4）
+
+### 验收
+
+- `npm run lint` 0 error
+- `npm run build` 成功，5 静态页全部 prerender 通过
+- 待用户在 :3001 肉眼验收：滚动是 lenis 平滑滚而非原生跳动 / 首屏 Featured Works 三张卡显示真实作品（医学 Coze / resume-tool / harbor-table）
+
+### 注意
+
+- lenis 1.3 默认开启 RAF；若将来想暂停（modal 打开时），可用 `lenis.stop()` / `lenis.start()`，或在 LenisProvider 暴露 ref 给 context
+- works-data.ts 是过渡 shim，M4 / M5 完成后应被删除：所有 component 都直接读 lib/projects.ts
+- /works 子页（works-hero / featured-project / projects-grid / works-cta）M3 暂未触动，按 SPEC §5 列在 v1.2 处理；shim 让数据是新的、视觉还是旧的——这是合规折衷
+- lib/projects.ts 中部分 `image` 还指向旧资源（resume-tool 用 /workspace.png、harbor-table 用 /封面.png）——M4 验收时由用户提供真实截图替换，不在 code 上预留 placeholder
+
+### 下一步
+
+进入 M4：重写 [components/site/project-card.tsx](components/site/project-card.tsx) 与 [components/site/featured-projects.tsx](components/site/featured-projects.tsx) 为杂志式大图布局 + Mono 状态标签 + hover 颜色反转，新建 [components/site/section-marker.tsx](components/site/section-marker.tsx) 和 [components/site/mono-status.tsx](components/site/mono-status.tsx) 复用组件。

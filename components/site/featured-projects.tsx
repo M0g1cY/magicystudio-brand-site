@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { FiArrowRight, FiArrowUpRight } from "react-icons/fi";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { featuredProjects } from "@/lib/site-data";
+import { featuredProjects } from "@/lib/projects";
 
 export function FeaturedProjects() {
   return (
@@ -52,7 +52,7 @@ export function FeaturedProjects() {
                   <div className="relative aspect-video rounded-lg overflow-hidden bg-muted/30">
                     <Image
                       src={project.image}
-                      alt={project.title}
+                      alt={project.name}
                       fill
                       className="object-cover group-hover:scale-[1.03] transition-transform duration-500"
                       sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
@@ -62,12 +62,12 @@ export function FeaturedProjects() {
                   <div className="space-y-2">
                     <div className="flex items-start justify-between">
                       <h3 className="font-semibold group-hover:text-primary transition-colors">
-                        {project.title}
+                        {project.name}
                       </h3>
                       <FiArrowUpRight className="text-muted-foreground group-hover:text-primary transition-colors shrink-0 mt-0.5" size={16} />
                     </div>
                     <p className="text-sm text-muted-foreground leading-relaxed">
-                      {project.description}
+                      {project.oneLiner}
                     </p>
                   </div>
 
