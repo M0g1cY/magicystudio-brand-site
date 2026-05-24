@@ -17,7 +17,7 @@ type PhrasePart =
 
 export function TokenAssembler({
   phrases,
-  initialDelayMs = 500,
+  initialDelayMs = 1200,
   cycleMs = 4000,
   staggerMs = 30,
   className = "",

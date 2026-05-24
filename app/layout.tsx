@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import localFont from "next/font/local";
 import { LenisProvider } from "@/components/lenis-provider";
 import { CursorCockpit } from "@/components/site/cursor-cockpit";
+import { Preloader } from "@/components/site/preloader";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -72,6 +73,7 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col">
         <LenisProvider />
         <CursorCockpit />
+        <Preloader />
         {children}
       </body>
     </html>

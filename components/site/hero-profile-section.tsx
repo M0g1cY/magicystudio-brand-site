@@ -19,7 +19,10 @@ export function HeroProfileSection() {
       </div>
 
       {/* Top-right wordmark anchor (small, fixed) */}
-      <div className="absolute top-8 right-6 lg:right-12 xl:right-20 font-mono text-[0.72rem] uppercase tracking-[0.18em] text-muted-foreground">
+      <div
+        id="wordmark-anchor"
+        className="absolute top-8 right-6 lg:right-12 xl:right-20 font-mono text-[0.72rem] uppercase tracking-[0.18em] text-muted-foreground"
+      >
         <span className="text-foreground">{fixed}</span>studio
       </div>
 
