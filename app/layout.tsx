@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -12,10 +13,47 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const editorial = localFont({
+  src: [
+    {
+      path: "../public/fonts/PPEditorialNew-Ultralight.otf",
+      weight: "200",
+      style: "normal",
+    },
+    {
+      path: "../public/fonts/PPEditorialNew-UltralightItalic.otf",
+      weight: "200",
+      style: "italic",
+    },
+    {
+      path: "../public/fonts/PPEditorialNew-Regular.otf",
+      weight: "400",
+      style: "normal",
+    },
+    {
+      path: "../public/fonts/PPEditorialNew-Italic.otf",
+      weight: "400",
+      style: "italic",
+    },
+    {
+      path: "../public/fonts/PPEditorialNew-Ultrabold.otf",
+      weight: "800",
+      style: "normal",
+    },
+    {
+      path: "../public/fonts/PPEditorialNew-UltraboldItalic.otf",
+      weight: "800",
+      style: "italic",
+    },
+  ],
+  variable: "--font-display",
+  display: "swap",
+});
+
 export const metadata: Metadata = {
-  title: "MagicYStudio — AI Workflow Builder & Independent Developer",
+  title: "MagicYStudio — AI-native Studio / Solo Builder",
   description:
-    "构建 AI 工作流，记录想法，创造有用的数字产品。MagicYStudio 个人品牌网站。",
+    "Independent creator with a clinical-medicine background. AI workflows that ship — currently powering medical content production at 10× throughput.",
 };
 
 export default function RootLayout({
@@ -26,7 +64,7 @@ export default function RootLayout({
   return (
     <html
       lang="zh-CN"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`dark ${geistSans.variable} ${geistMono.variable} ${editorial.variable} h-full antialiased`}
       suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col">{children}</body>

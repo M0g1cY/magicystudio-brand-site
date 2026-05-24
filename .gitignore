@@ -39,3 +39,12 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# v2 build/dev noise
+/dev-server.err
+/dev-server.log
+/C：TEMP/
+/PPEditorialNew-Free_for_personal_use/
+/PPEditorialNew-Free_for_personal_use.zip
+/public/fonts/PPEditorialNew-Free for personal use/
+/public/fonts/__MACOSX/
