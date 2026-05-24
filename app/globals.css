@@ -107,3 +107,20 @@
     @apply font-sans scroll-smooth;
   }
 }
+
+@keyframes card-text-current {
+  from {
+    transform: translateY(72px);
+  }
+
+  to {
+    transform: translateY(calc(-50% + 72px));
+  }
+}
+
+@layer components {
+  .group:hover .card-text-bg,
+  .group:focus-visible .card-text-bg {
+    animation: card-text-current 4.6s linear infinite;
+  }
+}

@@ -61,7 +61,7 @@ export function Preloader() {
     ? "inset(0 0 0 0 round 0px)"
     : isCompact
       ? "inset(16px calc(50vw - 34px) calc(100vh - 84px) calc(50vw - 34px) round 0 0 10px 10px)"
-      : "inset(16px calc(50vw - 140px) calc(100vh - 116px) calc(50vw - 140px) round 0 0 12px 12px)";
+      : "inset(16px calc(50vw - 170px) calc(100vh - 126px) calc(50vw - 170px) round 0 0 12px 12px)";
 
   return (
     <motion.div
@@ -75,7 +75,7 @@ export function Preloader() {
         ease: [0.76, 0, 0.24, 1],
       }}
       style={{
-        pointerEvents: intro ? "none" : "auto",
+        pointerEvents: "none",
         contain: "paint",
       }}
     >
@@ -95,9 +95,9 @@ export function Preloader() {
         animate={{
           opacity: 1,
           scale: 1,
-          width: isCompact ? 68 : 280,
-          height: isCompact ? 68 : 100,
-          top: intro ? "50%" : isCompact ? 50 : 66,
+          width: isCompact ? 68 : 340,
+          height: isCompact ? 68 : 110,
+          top: intro ? "50%" : isCompact ? 50 : 71,
         }}
         transition={{
           opacity: { duration: 0.65, delay: intro ? 0.12 : 0 },
@@ -113,7 +113,7 @@ export function Preloader() {
         style={{ pointerEvents: intro ? "none" : "auto" }}
       >
         <motion.span
-          className="grid place-items-center text-center text-[1.15rem] leading-none"
+          className="grid place-items-center text-center text-[1.45rem] leading-none"
           animate={{
             opacity: isCompact ? 0 : 1,
             scale: isCompact ? 0.72 : 1,

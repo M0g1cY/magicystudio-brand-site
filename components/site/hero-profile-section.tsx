@@ -4,7 +4,7 @@ import { siteConfig } from "@/lib/site-data";
 import { TokenAssembler } from "@/components/site/token-assembler";
 
 export function HeroProfileSection() {
-  const { fixed, rotating } = siteConfig.headline;
+  const { rotating } = siteConfig.headline;
   const statusText = siteConfig.statusText || "available for new work";
   const location = siteConfig.location || "remote";
 
@@ -14,18 +14,11 @@ export function HeroProfileSection() {
       className="relative min-h-screen flex items-end px-6 lg:px-12 xl:px-20 pt-40 pb-24 lg:pb-32"
     >
       {/* Archive-style section index */}
-      <div className="absolute top-8 left-6 lg:left-12 xl:left-20 font-mono text-[0.72rem] uppercase tracking-[0.18em] text-muted-foreground">
+      <div className="absolute top-24 left-6 lg:left-12 xl:left-20 font-mono text-[0.72rem] uppercase tracking-[0.18em] text-muted-foreground">
         00 / 06 — Index
       </div>
 
       {/* Top-right wordmark anchor (small, fixed) */}
-      <div
-        id="wordmark-anchor"
-        className="absolute top-8 right-6 lg:right-12 xl:right-20 font-mono text-[0.72rem] uppercase tracking-[0.18em] text-muted-foreground"
-      >
-        <span className="text-foreground">{fixed}</span>studio
-      </div>
-
       <div className="relative z-10 mx-auto w-full max-w-[1280px] grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-end">
         {/* Left: editorial display + status row + subhead */}
         <div className="lg:col-span-8 space-y-10">

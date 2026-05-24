@@ -37,6 +37,13 @@ export function ProjectCard({
   const showMetric = isFeatured && Boolean(project.metric);
   const Wrapper = project.links?.[0]?.href ? "a" : "div";
   const href = project.links?.[0]?.href;
+  const textBg = [
+    project.name,
+    ...project.tags.slice(0, 2),
+    project.year,
+    project.name,
+    project.metric || project.status,
+  ];
 
   return (
     <motion.article
@@ -55,9 +62,27 @@ export function ProjectCard({
           ? { href, target: "_blank", rel: "noopener noreferrer" }
           : {})}
         data-cursor="view"
-        className="group relative block overflow-hidden border border-border bg-card/40 transition-colors duration-300 hover:border-primary hover:bg-primary focus-visible:border-primary focus-visible:bg-primary focus-visible:outline-none"
+        className="group relative block overflow-hidden border border-border bg-card/40 transition-all duration-500 hover:scale-[0.97] hover:border-primary hover:bg-primary focus-visible:scale-[0.97] focus-visible:border-primary focus-visible:bg-primary focus-visible:outline-none"
       >
         {/* Mono status badge — top-left of image */}
+        <div
+          aria-hidden="true"
+          className="card-text-bg pointer-events-none absolute -left-[18%] -right-[18%] -top-[18%] z-[1] flex min-h-[180%] select-none flex-col px-5 font-display font-[800] uppercase leading-none text-primary-foreground opacity-0 transition-opacity duration-200 group-hover:opacity-25 group-focus-visible:opacity-25"
+        >
+          {textBg.map((line, lineIndex) => (
+            <p
+              key={`${line}-${lineIndex}`}
+              className={
+                lineIndex % 2 === 0
+                  ? "whitespace-nowrap text-[clamp(4rem,8vw,8rem)] leading-[0.74]"
+                  : "whitespace-nowrap font-mono text-[clamp(1rem,2vw,2rem)] leading-none tracking-[0.08em]"
+              }
+            >
+              {line}
+            </p>
+          ))}
+        </div>
+
         <div className="absolute top-3 left-3 z-10 px-2.5 py-1 bg-background/85 backdrop-blur-sm border border-border group-hover:bg-background group-hover:border-background transition-colors">
           <MonoStatus state={project.status} />
         </div>
@@ -69,7 +94,7 @@ export function ProjectCard({
 
         {/* Image */}
         <div
-          className={`relative bg-muted/40 overflow-hidden ${
+          className={`card-image relative z-[2] bg-muted/40 overflow-hidden transition-transform duration-700 ease-out group-hover:-translate-y-5 group-hover:scale-[0.96] group-focus-visible:-translate-y-5 group-focus-visible:scale-[0.96] ${
             isFeatured ? "aspect-[16/9]" : "aspect-[4/3]"
           }`}
         >
@@ -113,8 +138,8 @@ export function ProjectCard({
         <div
           className={`grid gap-4 ${
             isFeatured
-              ? "lg:grid-cols-12 px-6 py-7 lg:px-8 lg:py-10"
-              : "px-5 py-6"
+              ? "relative z-[2] lg:grid-cols-12 px-6 py-7 lg:px-8 lg:py-10"
+              : "relative z-[2] px-5 py-6"
           }`}
         >
           <div className={isFeatured ? "lg:col-span-7 space-y-3" : "space-y-3"}>
@@ -178,6 +203,12 @@ export function ProjectCard({
             {project.metric}
           </motion.div>
         )}
+        <div
+          aria-hidden="true"
+          className="card-cta pointer-events-none absolute left-1/2 top-1/2 z-30 flex h-20 w-20 -translate-x-1/2 -translate-y-1/2 scale-0 items-center justify-center rounded-full bg-foreground font-mono text-[0.62rem] uppercase tracking-[0.12em] text-background shadow-xl transition-transform duration-300 ease-out group-hover:scale-100 group-focus-visible:scale-100"
+        >
+          View
+        </div>
       </Wrapper>
     </motion.article>
   );
