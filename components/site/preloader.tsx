@@ -57,6 +57,7 @@ export function Preloader() {
   if (!mounted || reduceMotion) return null;
 
   const isCompact = compact && !expanded && !intro;
+  const showFull = !isCompact;
   const clipPath = intro
     ? "inset(0 0 0 0 round 0px)"
     : isCompact
@@ -70,9 +71,9 @@ export function Preloader() {
       initial={false}
       animate={{ clipPath }}
       transition={{
-        duration: intro ? 0 : 1.1,
+        duration: intro ? 0 : expanded ? 0.95 : 1.15,
         delay: intro ? 0 : 0,
-        ease: [0.76, 0, 0.24, 1],
+        ease: [0.16, 1, 0.3, 1],
       }}
       style={{
         pointerEvents: "none",
@@ -95,19 +96,19 @@ export function Preloader() {
         animate={{
           opacity: 1,
           scale: 1,
-          width: isCompact ? 68 : 340,
-          height: isCompact ? 68 : 110,
-          top: intro ? "50%" : isCompact ? 50 : 71,
+          width: showFull ? 340 : 68,
+          height: showFull ? 110 : 68,
+          top: intro ? "50%" : showFull ? 71 : 50,
         }}
         transition={{
           opacity: { duration: 0.65, delay: intro ? 0.12 : 0 },
           scale: { duration: 0.75, delay: intro ? 0.12 : 0 },
-          width: { duration: 0.82, ease: [0.16, 1, 0.3, 1] },
-          height: { duration: 0.82, ease: [0.16, 1, 0.3, 1] },
+          width: { duration: expanded ? 0.95 : 0.82, ease: [0.16, 1, 0.3, 1] },
+          height: { duration: expanded ? 0.95 : 0.82, ease: [0.16, 1, 0.3, 1] },
           top: {
-            duration: intro ? 1.15 : 0.82,
+            duration: intro ? 1.15 : expanded ? 0.95 : 0.82,
             delay: intro ? 0.55 : 0,
-            ease: [0.76, 0, 0.24, 1],
+            ease: [0.16, 1, 0.3, 1],
           },
         }}
         style={{ pointerEvents: intro ? "none" : "auto" }}
@@ -115,10 +116,10 @@ export function Preloader() {
         <motion.span
           className="grid place-items-center text-center text-[1.45rem] leading-none"
           animate={{
-            opacity: isCompact ? 0 : 1,
-            scale: isCompact ? 0.72 : 1,
+            opacity: showFull ? 1 : 0,
+            scale: showFull ? 1 : 0.72,
           }}
-          transition={{ duration: 0.52, ease: "easeOut" }}
+          transition={{ duration: expanded ? 0.72 : 0.58, ease: [0.16, 1, 0.3, 1] }}
         >
           <span className="text-foreground">MagicY</span>
           <span className="text-muted-foreground">studio</span>
@@ -126,10 +127,10 @@ export function Preloader() {
         <motion.span
           className="absolute grid place-items-center text-[1.55rem] leading-none text-foreground"
           animate={{
-            opacity: isCompact ? 1 : 0,
-            scale: isCompact ? 1 : 0.76,
+            opacity: showFull ? 0 : 1,
+            scale: showFull ? 0.76 : 1,
           }}
-          transition={{ duration: 0.52, ease: "easeOut" }}
+          transition={{ duration: expanded ? 0.58 : 0.72, ease: [0.16, 1, 0.3, 1] }}
         >
           MY
         </motion.span>
