@@ -83,6 +83,7 @@ export function Navbar() {
         <div className="hidden md:flex items-center gap-2">
           <button
             onClick={() => navigateToHash("#contact")}
+            data-cursor="build"
             className="font-mono text-[0.68rem] uppercase tracking-[0.18em] h-9 px-4 border border-border text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors"
           >
             contact
@@ -126,6 +127,7 @@ export function Navbar() {
             <div className="px-6 pb-4">
               <button
                 onClick={() => navigateToHash("#contact")}
+                data-cursor="build"
                 className="font-mono text-[0.68rem] uppercase tracking-[0.18em] h-9 px-4 border border-border text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors"
               >
                 contact

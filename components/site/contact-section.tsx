@@ -80,6 +80,7 @@ export function ContactSection() {
               <a
                 key={item.label}
                 href={item.href}
+                data-cursor="build"
                 target={item.href.startsWith("http") ? "_blank" : undefined}
                 rel={
                   item.href.startsWith("http")

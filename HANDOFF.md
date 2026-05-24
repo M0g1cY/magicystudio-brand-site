@@ -281,3 +281,13 @@ Expanded [components/site/project-card.tsx](components/site/project-card.tsx) so
 ## v3 M4 - Sticky ProcessStory (Codex)
 
 Implemented [components/site/process-story.tsx](components/site/process-story.tsx) as the v3 5-beat process section: desktop uses a 500vh scroll container with sticky full-screen beats driven by `useScroll` / `useTransform`, a live beat indicator, and a bottom progress bar; mobile and reduced-motion users get stacked cards. The SHIPPED beat reads the three featured projects and links thumbnails with `data-cursor="view"`. [app/page.tsx](app/page.tsx) now inserts Process between Work and About, and section markers were normalized to `total={5}` across Work, Process, About, Services, and Contact. Validation passed: `npm run lint` and `npm run build`.
+
+---
+
+## v3 M5 - Cursor Cockpit + Final Polish (Codex)
+
+Implemented [components/site/cursor-cockpit.tsx](components/site/cursor-cockpit.tsx) with a raw RAF follower, fine-pointer and no-reduced-motion gating, global cursor hiding only while active, and the three v3 cursor states: VIEW electric, BUILD primary, SELECT acid. [app/layout.tsx](app/layout.tsx) now mounts the cockpit beside Lenis. Cursor signal attributes were swept across navbar/contact build CTAs and service cards, while M3/M4 already cover project and shipped thumbnails. Final validation passed: `npm run lint`, `npm run build`, and `http://127.0.0.1:3001` returned 200. In-app browser screenshot verification was blocked by the local Windows sandbox, so final visual QA remains a user/browser pass.
+
+### v1.2 -> v3 final
+
+M2-M5 are now complete on `v3-cockpit` as separate commits: token assembler, project-card workflow hover, sticky process story, and custom cursor cockpit. The site now has the intended v3 memory mechanisms without adding dependencies or changing the core v2 token system.

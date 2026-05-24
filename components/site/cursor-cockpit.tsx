@@ -1,36 +1,103 @@
 "use client";
 
-/**
- * Custom cursor cockpit. v3/M5 — docs/SPEC-v3.md §1.4.
- *
- * STATUS: stub. Codex implements pointermove tracking + state ring.
- *
- * Behavior contract:
- *  - Mounts only when (pointer: fine) AND prefers-reduced-motion: no-preference.
- *    On touch / coarse pointer / reduced-motion → return null, keep system cursor.
- *  - Hides system cursor via global style (`html, body, * { cursor: none !important }`)
- *    only while the cockpit is active; on unmount, the rule must be removed.
- *  - Renders a fixed-position 14px ring follower that translates with the
- *    pointer via requestAnimationFrame + transform: translate3d, ~50ms ease lag.
- *  - Reads `data-cursor` from the closest hovered element via pointermove +
- *    `document.elementFromPoint` or via pointerover bubbling. States:
- *      - undefined  → 14px ring, no label, foreground border
- *      - "view"     → 56px ring, label "VIEW",   --electric  border
- *      - "build"    → 56px ring, label "BUILD",  --primary   border
- *      - "select"   → 40px ring, label "SELECT", --acid      border
- *  - Label is mono uppercase tracking 0.18, 11-12px.
- *  - z-index 9999, pointer-events: none.
- *
- * Implementation notes:
- *  - One single fixed div + nested label span.
- *  - Use a single rAF loop that interpolates current → target on every frame.
- *  - Mount listeners once. Clean up on unmount.
- *  - Do NOT use any external dep; framer-motion is overkill here, prefer raw RAF.
- *  - Avoid layout thrash: only `transform` and `width/height` (or scale) on the ring.
- */
+import { useEffect, useRef, useState } from "react";
+
+type CursorState = "default" | "view" | "build" | "select";
+
+const cursorMap: Record<
+  CursorState,
+  { size: number; label: string; color: string }
+> = {
+  default: { size: 14, label: "", color: "var(--foreground)" },
+  view: { size: 56, label: "VIEW", color: "var(--electric)" },
+  build: { size: 56, label: "BUILD", color: "var(--primary)" },
+  select: { size: 40, label: "SELECT", color: "var(--acid)" },
+};
 
 export function CursorCockpit() {
-  // TODO(codex): full implementation per §1.4. Stub returns null so v2 visuals
-  // remain intact (system cursor stays). Delete the early return on M5.
-  return null;
+  const ringRef = useRef<HTMLDivElement>(null);
+  const target = useRef({ x: -100, y: -100 });
+  const current = useRef({ x: -100, y: -100 });
+  const raf = useRef<number | null>(null);
+  const [enabled, setEnabled] = useState(false);
+  const [state, setState] = useState<CursorState>("default");
+
+  useEffect(() => {
+    const fine = window.matchMedia("(pointer: fine)");
+    const motion = window.matchMedia("(prefers-reduced-motion: no-preference)");
+    const update = () => setEnabled(fine.matches && motion.matches);
+
+    update();
+    fine.addEventListener("change", update);
+    motion.addEventListener("change", update);
+
+    return () => {
+      fine.removeEventListener("change", update);
+      motion.removeEventListener("change", update);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!enabled) return;
+
+    const style = document.createElement("style");
+    style.dataset.cursorCockpit = "true";
+    style.textContent = "html, body, body * { cursor: none !important; }";
+    document.head.appendChild(style);
+
+    const onPointerMove = (event: PointerEvent) => {
+      target.current = { x: event.clientX, y: event.clientY };
+      const cursorTarget = (event.target as Element | null)?.closest(
+        "[data-cursor]",
+      );
+      const value = cursorTarget?.getAttribute("data-cursor");
+      setState(isCursorState(value) ? value : "default");
+    };
+
+    const tick = () => {
+      current.current.x += (target.current.x - current.current.x) * 0.35;
+      current.current.y += (target.current.y - current.current.y) * 0.35;
+      const ring = ringRef.current;
+      if (ring) {
+        ring.style.transform = `translate3d(${current.current.x}px, ${current.current.y}px, 0) translate(-50%, -50%)`;
+      }
+      raf.current = window.requestAnimationFrame(tick);
+    };
+
+    document.body.addEventListener("pointermove", onPointerMove, {
+      passive: true,
+    });
+    raf.current = window.requestAnimationFrame(tick);
+
+    return () => {
+      document.body.removeEventListener("pointermove", onPointerMove);
+      if (raf.current !== null) window.cancelAnimationFrame(raf.current);
+      style.remove();
+      setState("default");
+    };
+  }, [enabled]);
+
+  if (!enabled) return null;
+
+  const config = cursorMap[state];
+
+  return (
+    <div
+      ref={ringRef}
+      aria-hidden="true"
+      className="pointer-events-none fixed left-0 top-0 z-[9999] flex items-center justify-center rounded-full border bg-background/10 font-mono text-[0.68rem] uppercase tracking-[0.18em] text-foreground backdrop-blur-[2px] transition-[width,height,border-color,color] duration-150 ease-out"
+      style={{
+        width: config.size,
+        height: config.size,
+        borderColor: config.color,
+        color: config.color,
+      }}
+    >
+      {config.label && <span>{config.label}</span>}
+    </div>
+  );
+}
+
+function isCursorState(value: string | null | undefined): value is CursorState {
+  return value === "view" || value === "build" || value === "select";
 }

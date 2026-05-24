@@ -61,11 +61,13 @@ export function ServicesSection() {
           {services.map((service, i) => (
             <motion.article
               key={service.id}
+              data-cursor="select"
               initial={{ opacity: 0, y: 24 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-60px" }}
               transition={{ duration: 0.45, delay: i * 0.06 }}
-              className="group relative bg-background hover:bg-card/80 transition-colors p-6 lg:p-7 space-y-5 min-h-[220px]"
+              className="group relative bg-background hover:bg-card/80 focus-visible:bg-card/80 transition-colors p-6 lg:p-7 space-y-5 min-h-[220px] focus-visible:outline-none"
+              tabIndex={0}
             >
               <div className="flex items-start justify-between">
                 <span className="inline-flex items-center justify-center h-10 w-10 border border-border text-foreground group-hover:border-primary group-hover:text-primary transition-colors">
